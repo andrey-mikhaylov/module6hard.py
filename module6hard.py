@@ -1,3 +1,151 @@
+from itertools import filterfalse
+
+
+class Figure:
+    sides_count = 0
+    def __init__(self, sides: tuple[int], color: tuple[int], filled: bool):
+        """
+        :param sides: список сторон (целые числа)
+        :param color: список цветов в формате RGB
+        :param filled: закрашенный, bool
+        """
+        self.__sides = sides
+        self.__color = color
+        self.filled = filled
+
+    def get_color(self) -> tuple[int]:
+        """
+        :return: список RGB цветов.
+        """
+        return self.__color
+
+    def __is_valid_color(self, r: int, g: int, b: int) -> bool:
+        """
+        служебный, принимает параметры r, g, b,
+        проверяет корректность переданных значений перед установкой нового цвета
+        Корректным цвет: все значения r, g и b - целые числа в диапазоне от 0 до 255 (включительно)
+        :param r:
+        :param g:
+        :param b:
+        :return:
+        """
+        return False
+
+    def set_color(self, r: int, g: int, b: int):
+        """
+        изменяет атрибут __color на соответствующие значения
+        предварительно проверив их на корректность
+        Если введены некорректные данные, то цвет остаётся прежним.
+        :param r: 
+        :param g: 
+        :param b: 
+        :return:
+        """
+
+    def __is_valid_sides(self, *sides):
+        """
+        служебный
+        :param sides: неограниченное кол-во сторон
+        :return: True если все стороны целые положительные числа, и кол-во новых сторон совпадает с текущим
+                 False - во всех остальных случаях
+        """
+
+    def get_sides(self) -> tuple[int]:
+        """
+        :return: значение атрибута __sides.
+        """
+        return self.__sides
+
+    def __len__(self):
+        """
+        :return: периметр фигуры
+        """
+        return 0
+
+    def set_sides(self, *new_sides):
+        """
+        :param new_sides: новые стороны
+               если их количество не равно sides_count, то не изменять, в противном случае - менять.
+        :return:
+        """
+
+
+class Circle(Figure):
+    """
+    Атрибуты класса Circle: sides_count = 1
+    Каждый объект класса Circle должен обладать следующими атрибутами и методами:
+    Все атрибуты и методы класса Figure
+    Атрибут __radius, рассчитать исходя из длины окружности (одной единственной стороны).
+    Метод get_square возвращает площадь круга (можно рассчитать как через длину, так и через радиус).
+    """
+
+class Triangle(Figure):
+    """
+    Атрибуты класса Triangle: sides_count = 3
+    Каждый объект класса Triangle должен обладать следующими атрибутами и методами:
+    Все атрибуты и методы класса Figure
+    Метод get_square возвращает площадь треугольника. (можно рассчитать по формуле Герона)
+    """
+
+class Cube(Figure):
+    """
+    Атрибуты класса Cube: sides_count = 12
+    Каждый объект класса Cube должен обладать следующими атрибутами и методами:
+    Все атрибуты и методы класса Figure.
+    Переопределить __sides сделав список из 12 одинаковы сторон (передаётся 1 сторона)
+    Метод get_volume, возвращает объём куба.
+    """
+
+
+def test_figure():
+    pass
+
+
+def test_circle():
+
+
+def test_cube():
+    pass
+
+
+def test():
+    test_figure()
+    test_circle()
+    test_cube()
+
+    circle1 = Circle((200, 200, 100), 10)  # (Цвет, стороны)
+    cube1 = Cube((222, 35, 130), 6)
+
+    # Проверка на изменение цветов:
+    circle1.set_color(55, 66, 77)  # Изменится
+    print(circle1.get_color())
+    cube1.set_color(300, 70, 15)  # Не изменится
+    print(cube1.get_color())
+
+    # Проверка на изменение сторон:
+    cube1.set_sides(5, 3, 12, 4, 5)  # Не изменится
+    print(cube1.get_sides())
+    circle1.set_sides(15)  # Изменится
+    print(circle1.get_sides())
+
+    # Проверка периметра (круга), это и есть длина:
+    print(len(circle1))
+
+    # Проверка объёма (куба):
+    print(cube1.get_volume())
+    """
+Выходные данные (консоль):
+[55, 66, 77]
+[222, 35, 130]
+[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+[15]
+15
+216
+    """
+
+if __name__ == '__main__':
+    test()
+
 """
 2023/11/12 00:00|Дополнительное практическое задание по модулю*
 Дополнительное практическое задание по модулю: "Наследование классов."
