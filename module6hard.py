@@ -1,10 +1,13 @@
-from itertools import filterfalse
+from math import pi, sqrt
+
+Color = tuple[int, int, int]
+Sides = list[int]
 
 
 class Figure:
     sides_count = 0
 
-    def __init__(self, sides: list[int], color: tuple[int], filled: bool = False):
+    def __init__(self, sides, color: Color, filled: bool = False):
         """
         :param sides: список сторон (целые числа)
         :param color: список цветов в формате RGB
@@ -14,23 +17,12 @@ class Figure:
         self.__color = color
         self.filled = filled
 
-    def get_color(self) -> tuple[int]:
+    def get_color(self) -> Color:
         """
         :return: список RGB цветов.
         """
         return self.__color
 
-    def __is_valid_color(self, r: int, g: int, b: int) -> bool:
-        """
-        служебный, принимает параметры r, g, b,
-        проверяет корректность переданных значений перед установкой нового цвета
-        Корректным цвет: все значения r, g и b - целые числа в диапазоне от 0 до 255 (включительно)
-        :param r:
-        :param g:
-        :param b:
-        :return:
-        """
-        return False
 
     def set_color(self, r: int, g: int, b: int):
         """
@@ -42,6 +34,24 @@ class Figure:
         :param b: 
         :return:
         """
+
+        def __is_valid_sub_color(c: int) -> bool:
+            return 0 <= c <= 255
+
+        def __is_valid_color(r: int, g: int, b: int) -> bool:
+            """
+            служебный, принимает параметры r, g, b,
+            проверяет корректность переданных значений перед установкой нового цвета
+            Корректным цвет: все значения r, g и b - целые числа в диапазоне от 0 до 255 (включительно)
+            :param r:
+            :param g:
+            :param b:
+            :return:
+            """
+            return all(map(__is_valid_sub_color, (r, g, b)))
+
+        if __is_valid_color(r, g, b):
+            self.__color = r, g, b
 
     def __is_valid_sides(self, *sides):
         """
@@ -61,7 +71,7 @@ class Figure:
         """
         :return: периметр фигуры
         """
-        return 0
+        return sum(self.__sides)
 
     def set_sides(self, *new_sides):
         """
@@ -74,7 +84,7 @@ class Figure:
 class Circle(Figure):
     sides_count = 1
 
-    def __init__(self, color: tuple[int], *sides):
+    def __init__(self, color: Color, *sides):
         if len(sides) != self.sides_count:
             sides = [1] * self.sides_count
         super().__init__(sides, color)
@@ -85,21 +95,24 @@ class Circle(Figure):
         :return: площадь круга
         """
         # (можно рассчитать как через длину, так и через радиус).
-        return 0.0
+        return pi * self.__radius ** 2.0
 
-    def __calc_radius(self, param) -> float:
+    def __calc_radius(self, side: int) -> float:
         """
         # рассчитать радиус исходя из длины окружности (одной единственной стороны).
         :param side_len: длина стороны
         :return: радиус
         """
-        return 0.0
+        return side / 2.0 / pi
+
+    def get_radius(self):
+        return self.__radius
 
 
 class Triangle(Figure):
     sides_count = 3
 
-    def __init__(self, color: tuple[int], *sides):
+    def __init__(self, color: Color, *sides):
         if len(sides) != self.sides_count:
             sides = [1] * self.sides_count
         super().__init__(sides, color)
@@ -108,14 +121,17 @@ class Triangle(Figure):
         """
         :return: площадь треугольника
         """
-        # . (можно рассчитать по формуле Герона)
-        return 0.0
+        # по формуле Герона
+        a, b, c = self.get_sides()
+        p = (a + b + c) / 2.0
+        s = sqrt(p * (p - a) * (p - b) * (p - c))
+        return s
 
 
 class Cube(Figure):
     sides_count = 12
 
-    def __init__(self, color: tuple[int], *sides):
+    def __init__(self, color: Color, *sides):
         # Переопределить __sides сделав список из 12 одинаковы сторон (передаётся 1 сторона)
         if len(sides) != 1:
             sides = [1] * self.sides_count
@@ -131,21 +147,54 @@ class Cube(Figure):
 
 
 def test_figure():
+    f = Figure((1, 2, 3), (0, 0, 0), False)
+    f = Figure((1, 2, 3), (500, 500, 500), True)
+    f = Figure((1, 2, 3), (-1, -1, -1), True)
+    f = Figure(tuple(), (-1, -1, -1), True)
+    f = Figure((1, 2, 3), (1, 2, 3), True)
+    if f.get_color() != (1, 2, 3): raise
+    if f.get_sides() != (1, 2, 3): raise
+    if not f.filled: raise
+    f.set_color(5, 6, 7)
+    if f.get_color() != (5, 6, 7): raise
+    f.set_color(300, 400, 500)
+    if f.get_color() != (5, 6, 7): raise
+    if len(f) != 1+2+3: raise
     pass
-
 
 def test_circle():
+    l = 5
+    r = 5 / 2.0 / pi
+    c = Circle((1,2,3), l)
+    if c.get_sides() != (l,): raise
+    if c.get_color() != (1, 2, 3): raise
+    c.set_color(5, 6, 7)
+    if c.get_color() != (5, 6, 7): raise
+    if c.get_radius() != r: raise
+    if c.get_square() != pi * r ** 2.0: raise
+    if len(c) != l: raise
     pass
+
+
+def test_triangle():
+    a,b,c = 2,3,4
+    t = Triangle((1, 2, 3), a,b,c)
+    if t.get_sides() != (2,3,4): raise
+    if t.get_color() != (1, 2, 3): raise
+    t.set_color(5, 6, 7)
+    if t.get_color() != (5, 6, 7): raise
+    p = (a+b+c)/2.0
+    s = sqrt(p*(p-a)*(p-b)*(p-c))
+    if s != t.get_square(): raise
+    if len(t) != a+b+c: raise
+    pass
+
 
 def test_cube():
     pass
 
 
 def test():
-    test_figure()
-    test_circle()
-    test_cube()
-
     circle1 = Circle((200, 200, 100), 10)  # (Цвет, стороны)
     cube1 = Cube((222, 35, 130), 6)
 
@@ -177,6 +226,10 @@ def test():
     """
 
 if __name__ == '__main__':
+    test_figure()
+    test_circle()
+    test_triangle()
+    test_cube()
     test()
 
 """
