@@ -1,7 +1,6 @@
 from math import pi, sqrt
 
 Color = tuple[int, int, int]
-Sides = list[int]
 
 
 class Figure:
@@ -13,6 +12,9 @@ class Figure:
         :param color: список цветов в формате RGB
         :param filled: закрашенный, bool
         """
+        sides = list(sides)
+        if not self.__is_valid_sides(sides):
+            sides = [1] * len(sides)
         self.__sides = sides
         self.__color = color
         self.filled = filled
@@ -53,21 +55,25 @@ class Figure:
         if __is_valid_color(r, g, b):
             self.__color = r, g, b
 
-    def __is_valid_sides(self, *sides):
+    def __is_valid_sides(self, sides):
         """
         служебный
         :param sides: неограниченное кол-во сторон
         :return: True если все стороны целые положительные числа, и кол-во новых сторон совпадает с текущим
                  False - во всех остальных случаях
         """
+        if len(sides) != self.sides_count:
+            return False
 
-    def get_sides(self) -> list[int]:
+        return all(map(lambda x: x>0, sides))
+
+    def get_sides(self) -> list:
         """
         :return: значение атрибута __sides.
         """
         return self.__sides
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         :return: периметр фигуры
         """
@@ -77,8 +83,11 @@ class Figure:
         """
         :param new_sides: новые стороны
                если их количество не равно sides_count, то не изменять, в противном случае - менять.
-        :return:
         """
+        if len(new_sides) != self.sides_count:
+            return
+
+        self.__sides = list(new_sides)
 
 
 class Circle(Figure):
@@ -97,13 +106,13 @@ class Circle(Figure):
         # (можно рассчитать как через длину, так и через радиус).
         return pi * self.__radius ** 2.0
 
-    def __calc_radius(self, side: int) -> float:
+    def __calc_radius(self, side_len: int) -> float:
         """
         # рассчитать радиус исходя из длины окружности (одной единственной стороны).
         :param side_len: длина стороны
         :return: радиус
         """
-        return side / 2.0 / pi
+        return side_len / 2.0 / pi
 
     def get_radius(self):
         return self.__radius
@@ -143,17 +152,22 @@ class Cube(Figure):
         """
         :return: объём куба.
         """
-        return 0.0
+        s = self.get_sides()[0]
+        return s ** 3
 
 
 def test_figure():
-    f = Figure((1, 2, 3), (0, 0, 0), False)
-    f = Figure((1, 2, 3), (500, 500, 500), True)
-    f = Figure((1, 2, 3), (-1, -1, -1), True)
-    f = Figure(tuple(), (-1, -1, -1), True)
-    f = Figure((1, 2, 3), (1, 2, 3), True)
+    f = Figure([], (0, 0, 0), False)
+    f = Figure([], (500, 500, 500), True)
+    f = Figure([], (-1, -1, -1), True)
+    f = Figure([], (-1, -1, -1), True)
+    f = Figure([], (1, 2, 3), True)
+    if len(f) != 0: raise
+    if f.get_sides() != []: raise
     if f.get_color() != (1, 2, 3): raise
-    if f.get_sides() != (1, 2, 3): raise
+    f.sides_count = 3
+    f.set_sides(1, 2, 3)
+    if f.get_sides() != [1, 2, 3]: raise
     if not f.filled: raise
     f.set_color(5, 6, 7)
     if f.get_color() != (5, 6, 7): raise
@@ -163,23 +177,31 @@ def test_figure():
     pass
 
 def test_circle():
+    c = Circle((2,3,4), -1)
+    if c.get_sides() != [1]: raise
     l = 5
     r = 5 / 2.0 / pi
     c = Circle((1,2,3), l)
-    if c.get_sides() != (l,): raise
+    if c.get_sides() != [l]: raise
     if c.get_color() != (1, 2, 3): raise
     c.set_color(5, 6, 7)
     if c.get_color() != (5, 6, 7): raise
     if c.get_radius() != r: raise
     if c.get_square() != pi * r ** 2.0: raise
     if len(c) != l: raise
+    c.set_sides(6)
+    if len(c) != 6: raise
     pass
 
 
 def test_triangle():
+    t = Triangle((1, 2, 3), -1, -2, -3)
+    if t.get_sides() != [1, 1, 1]: raise
+    t = Triangle((1, 2, 3), 5)
+    if t.get_sides() != [1, 1, 1]: raise
     a,b,c = 2,3,4
     t = Triangle((1, 2, 3), a,b,c)
-    if t.get_sides() != (2,3,4): raise
+    if t.get_sides() != [2,3,4]: raise
     if t.get_color() != (1, 2, 3): raise
     t.set_color(5, 6, 7)
     if t.get_color() != (5, 6, 7): raise
@@ -191,6 +213,10 @@ def test_triangle():
 
 
 def test_cube():
+    c = Cube((1, 2, 3), 5)
+    if c.get_volume() != 5 ** 3: raise
+    if len(c.get_sides()) != 12: raise
+    if len(c) != 5*12: raise
     pass
 
 
