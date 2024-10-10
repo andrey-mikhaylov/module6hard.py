@@ -3,7 +3,7 @@ from itertools import filterfalse
 
 class Figure:
     sides_count = 0
-    def __init__(self, sides: tuple[int], color: tuple[int], filled: bool):
+    def __init__(self, sides: list[int], color: tuple[int], filled: bool = False):
         """
         :param sides: список сторон (целые числа)
         :param color: список цветов в формате RGB
@@ -50,7 +50,7 @@ class Figure:
                  False - во всех остальных случаях
         """
 
-    def get_sides(self) -> tuple[int]:
+    def get_sides(self) -> list[int]:
         """
         :return: значение атрибута __sides.
         """
@@ -71,13 +71,28 @@ class Figure:
 
 
 class Circle(Figure):
-    """
-    Атрибуты класса Circle: sides_count = 1
-    Каждый объект класса Circle должен обладать следующими атрибутами и методами:
-    Все атрибуты и методы класса Figure
-    Атрибут __radius, рассчитать исходя из длины окружности (одной единственной стороны).
-    Метод get_square возвращает площадь круга (можно рассчитать как через длину, так и через радиус).
-    """
+    sides_count = 1
+    def __init__(self, color: tuple[int], *sides):
+        if len(sides) != self.sides_count:
+            sides = [1]
+        super().__init__(sides, color)
+        self.__radius = self.__calc_radius(sides[0])
+
+    def get_square(self) -> float:
+        """
+        :return: площадь круга
+        """
+        # (можно рассчитать как через длину, так и через радиус).
+        return 0.0
+
+    def __calc_radius(self, param) -> float:
+        """
+        # рассчитать радиус исходя из длины окружности (одной единственной стороны).
+        :param side_len: длина стороны
+        :return: радиус
+        """
+        return 0.0
+
 
 class Triangle(Figure):
     """
@@ -102,7 +117,7 @@ def test_figure():
 
 
 def test_circle():
-
+    pass
 
 def test_cube():
     pass
