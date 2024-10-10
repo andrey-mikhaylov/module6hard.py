@@ -3,6 +3,7 @@ from itertools import filterfalse
 
 class Figure:
     sides_count = 0
+
     def __init__(self, sides: list[int], color: tuple[int], filled: bool = False):
         """
         :param sides: список сторон (целые числа)
@@ -72,6 +73,7 @@ class Figure:
 
 class Circle(Figure):
     sides_count = 1
+
     def __init__(self, color: tuple[int], *sides):
         if len(sides) != self.sides_count:
             sides = [1]
@@ -95,12 +97,20 @@ class Circle(Figure):
 
 
 class Triangle(Figure):
-    """
-    Атрибуты класса Triangle: sides_count = 3
-    Каждый объект класса Triangle должен обладать следующими атрибутами и методами:
-    Все атрибуты и методы класса Figure
-    Метод get_square возвращает площадь треугольника. (можно рассчитать по формуле Герона)
-    """
+    sides_count = 3
+
+    def __init__(self, color: tuple[int], *sides):
+        if len(sides) != self.sides_count:
+            sides = [1, 1, 1]
+        super().__init__(sides, color)
+
+    def get_square(self) -> float:
+        """
+        :return: площадь треугольника
+        """
+        # . (можно рассчитать по формуле Герона)
+        return 0.0
+
 
 class Cube(Figure):
     """
