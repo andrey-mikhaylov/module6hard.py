@@ -76,7 +76,7 @@ class Circle(Figure):
 
     def __init__(self, color: tuple[int], *sides):
         if len(sides) != self.sides_count:
-            sides = [1]
+            sides = [1] * self.sides_count
         super().__init__(sides, color)
         self.__radius = self.__calc_radius(sides[0])
 
@@ -101,7 +101,7 @@ class Triangle(Figure):
 
     def __init__(self, color: tuple[int], *sides):
         if len(sides) != self.sides_count:
-            sides = [1, 1, 1]
+            sides = [1] * self.sides_count
         super().__init__(sides, color)
 
     def get_square(self) -> float:
@@ -113,13 +113,21 @@ class Triangle(Figure):
 
 
 class Cube(Figure):
-    """
-    Атрибуты класса Cube: sides_count = 12
-    Каждый объект класса Cube должен обладать следующими атрибутами и методами:
-    Все атрибуты и методы класса Figure.
-    Переопределить __sides сделав список из 12 одинаковы сторон (передаётся 1 сторона)
-    Метод get_volume, возвращает объём куба.
-    """
+    sides_count = 12
+
+    def __init__(self, color: tuple[int], *sides):
+        # Переопределить __sides сделав список из 12 одинаковы сторон (передаётся 1 сторона)
+        if len(sides) != 1:
+            sides = [1] * self.sides_count
+        else:
+            sides = [sides[0]] * self.sides_count
+        super().__init__(sides, color)
+
+    def  get_volume(self):
+        """
+        :return: объём куба.
+        """
+        return 0.0
 
 
 def test_figure():
@@ -215,6 +223,7 @@ if __name__ == '__main__':
 Каждый объект класса Triangle должен обладать следующими атрибутами и методами:
 Все атрибуты и методы класса Figure
 Метод get_square возвращает площадь треугольника. (можно рассчитать по формуле Герона)
+
 Атрибуты класса Cube: sides_count = 12
 Каждый объект класса Cube должен обладать следующими атрибутами и методами:
 Все атрибуты и методы класса Figure.
